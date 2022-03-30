@@ -20,14 +20,14 @@ JSON files should be in one of the two acceptable formats.
 ### Object Format
  ```
  {
-  optionalKey: []
-  optionalKey: {}
+  optionalKey: [],
+  optionalKey: {},
    // This is the only required key value pair
   dataKey: [
-  {column: value, column: value, column: value},
-  {column: value, column: value, column: value},
-  {column: value, column: value, column: value},
-  {column: value, column: value, column: value, column: value}
+  {"column": value, "column": value, "column": value},
+  {"column": value, "column": value, "column": value},
+  {"column": value, "column": value, "column": value},
+  {"column": value, "column": value, "column": value, "column": value}
   ]
  }
  ```
