@@ -18,16 +18,16 @@ json_csv_general.py -i {The directory of your input json files} -o {The director
 JSON files should be in one of the two acceptable formats.
 
 ### Object Format
- ```
+ ```json
  {
-  optionalKey: [],
-  optionalKey: {},
-   // This is the only required key value pair
-  dataKey: [
-  {"column": value, "column": value, "column": value},
-  {"column": value, "column": value, "column": value},
-  {"column": value, "column": value, "column": value},
-  {"column": value, "column": value, "column": value, "column": value}
+  "optionalKey": [],
+  "optionalKey": {},
+  "This is the only required key value pair"
+  "dataKey": [
+  {"column": "value", "column": "value", "column": "value"},
+  {"column": "value", "column": "value", "column": "value"},
+  {"column": "value", "column": "value", "column": "value"},
+  {"column": "value", "column": "value", "column": "value", "column": "value"}
   ]
  }
  ```
