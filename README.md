@@ -12,8 +12,6 @@ json_csv_general.py -i {The directory of your input json files} -o {The director
 
 `-o/--output`: The output directory for your csv files.
 
-`-k/--objkey`: If the input json is in object format this should be they key value of the list where the row objects is stored.
-
 ## JSON Format
 JSON file should be formatted in an object form each with arrays of object representing rows and tabs.
 
