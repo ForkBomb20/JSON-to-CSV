@@ -1,33 +1,23 @@
 import csv
 from collections import OrderedDict
+import shutil
 import ujson
 import argparse
 import os
 
-# Returns the json string from a file tested with multiple encodings
-def getJsonStr(filepath):
+# Returns a loaded json object from the provided file
+def load_json(filepath):
     encodings = ["utf-8", "iso-8859-1", "latin-1", "utf-16", "utf-32", "ascii",  "cp1252"]
 
     for encoding in encodings:
         try:
             with open(filepath, "r", encoding=encoding) as f:
-                return f.read()
+                return ujson.loads(f.read())
         except:
             pass
 
     raise Exception("Could not decode file or parsing error")
 
-# Returns an array of row dictionaries from a json parsed json string
-def get_rows(json_str, dict_key=None):
-    data = ujson.loads(json_str)
-
-    # Attempt to get rows from known array json formatting types
-    if json_str[0] == "[":
-        return data
-
-    # Attempt to get rows from known object json formatting types
-    elif json_str[0] == "{":
-        return data[dict_key]
             
 # Writes the given rows to a csv file with the given fields
 def create_csv(fields, rows, filepath):
@@ -82,29 +72,51 @@ def toOrdered(dicts, fields):
 
 def main():
 
+    # Sets up parser for arguments
     parser = argparse.ArgumentParser(description="Converts a json files to csv files")
 
     parser.add_argument("-i", "--input", help="The path to the input directory for the jsons", required=True)
     parser.add_argument("-o", "--output", help="The path to the output directory for the csvs", required=True)
-    parser.add_argument("-k", "--objkey", help="If the json file is in an object format this should be given as the key which holds the array of json objects to act as rows", required=False)
     
     args = parser.parse_args()
     files = os.listdir(args.input)
 
+    # Creates an output directory if there is none and if ther is one empty it
+    try:
+        os.mkdir(args.output)
+    except FileExistsError:
+        # remove all files in output
+        for file in os.listdir(args.output):
+            shutil.rmtree(args.output)
+            os.mkdir(args.output)
+
+    # For each file in the input directory load in the json object
     for file in files:
-        json_str = getJsonStr(args.input + "/" + file)
-        if args.objkey:
-            rows = get_rows(json_str, args.objkey.strip())
+        tabs = load_json(args.input + "/" + file)
+
+        # If there are multiple keys in the object, meaning multiple tabs then for each parse the rows and create
+        # multiple csv files for each tab
+        if len(tabs) > 1:
+            os.mkdir("./csvs/" + file.strip(".json"))
+            for tab in tabs:
+                fields = getUniqueKeys(tabs[tab])
+                ordereds = toOrdered(tabs[tab], fields)
+                literals = toLiteral(ordereds, fields)
+                write_rows = [list(row.values()) for row in literals]
+                no_spaces = "".join(tab.split(" "))
+                name = args.output + "/" + file.strip(".json") + "/" + file.split(".")[0] + f"_{no_spaces}" + ".csv"
+                create_csv(fields, write_rows, name)
+                
+        # If there is only one tab create only one csv file
         else:
-            rows = get_rows(json_str)
-        fields = getUniqueKeys(rows)
-        ordereds = toOrdered(rows, fields)
-        literals = toLiteral(ordereds, fields)
-        write_rows = [list(row.values()) for row in literals]
-        create_csv(fields, write_rows, args.output + "/" + file.split(".")[0] + ".csv")
+            for tab in tabs:
+                fields = getUniqueKeys(tabs[tab])
+                ordereds = toOrdered(tabs[tab], fields)
+                literals = toLiteral(ordereds, fields)
+                write_rows = [list(row.values()) for row in literals]
+                no_spaces = "".join(tab.split(" "))
+                name = args.output + "/" + file.split(".")[0] + f"_{no_spaces}" + ".csv"
+                create_csv(fields, write_rows, name)
     
 if __name__ == "__main__":
     main()
-
-
-
