@@ -32,3 +32,4 @@ JSON file should be formatted in an object form each with arrays of object repre
  * If a JSON file has multiple arrays of rows that need to be converted into separate CSV files they should be separated into separate JSON files and then fed into the script that way.
  * The script will create the output directory if it does not already exist, and will **delete all contents whithin it if it does**.
  * Each object in a tab array represents a row with column names and their respective values.
+ * If there are multiple tabs, the script will create a sub_directory in the outout directory specified with the name if the base json file for all the tabs and store all the csv files for the tabs in that sub directory
