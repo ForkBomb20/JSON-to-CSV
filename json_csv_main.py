@@ -81,7 +81,7 @@ def main():
     args = parser.parse_args()
     files = os.listdir(args.input)
 
-    # Creates an output directory if there is none and if ther is one empty it
+    # Creates an output directory if there is none and if there is one empty it
     try:
         os.mkdir(args.output)
     except FileExistsError:
@@ -92,6 +92,7 @@ def main():
 
     # For each file in the input directory load in the json object
     for file in files:
+        print(file)
         tabs = load_json(args.input + "/" + file)
 
         # If there are multiple keys in the object, meaning multiple tabs then for each parse the rows and create
@@ -114,8 +115,7 @@ def main():
                 ordereds = toOrdered(tabs[tab], fields)
                 literals = toLiteral(ordereds, fields)
                 write_rows = [list(row.values()) for row in literals]
-                no_spaces = "".join(tab.split(" "))
-                name = args.output + "/" + file.split(".")[0] + f"_{no_spaces}" + ".csv"
+                name = args.output + "/" + file.split(".")[0] + ".csv"
                 create_csv(fields, write_rows, name)
     
 if __name__ == "__main__":
